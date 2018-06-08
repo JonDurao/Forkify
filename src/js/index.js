@@ -61,6 +61,8 @@
  *  Libraries like Redux on react do this
  */
 import Search from './models/Search'
+import * as searchView from './views/searchView'
+import {DOM_ELEMENTS as Elements} from './views/base'
 
 /**
  * Global state of the app
@@ -73,23 +75,25 @@ const state = {};
 
 const controlSearch = async () => {
       // 1 - Get Query from view
-    const query = 'pasta';  //TODO
+    const query = searchView.getInput();
 
     if (query) {
         // 2 - New search object and add to state
         state.search = new Search(query);
 
         // 3 - Prepare the UI for the new data
+        searchView.cleanInput();
+        searchView.cleanResultList();
 
         // 4 - Search for recipes
         await state.search.getSearchResults();
 
         // 5 - Render results in UI
-        console.log(state.search.result);
+        searchView.renderResults(state.search.result);
     }
 };
 
-document.querySelector('.search').addEventListener('submit', e => {
+Elements.search.addEventListener('submit', e => {
     e.preventDefault();
     controlSearch();
 });

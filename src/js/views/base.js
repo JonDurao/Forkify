@@ -1,7 +1,33 @@
 export const DOM_ELEMENTS = {
+    results: document.querySelector('.results'),
     results_list: document.querySelector('.results__list'),
+    results_pages: document.querySelector('.results__pages'),
     search: document.querySelector('.search'),
     search_input: document.querySelector('.search__field')
+};
+
+export const DOM_ELEMENT_STRINGS = {
+    loader: 'loader',
+    nextPage: 'results__btn--next',
+    prevPage: 'results__btn--prev'
+};
+
+export const renderLoader = parent => {
+    const loader = `
+        <div class="${DOM_ELEMENT_STRINGS.loader}">
+            <svg>
+                <use href="img/icons.svg#icon-cw"></use>
+            </svg>
+        </div>`;
+
+    parent.insertAdjacentHTML('afterbegin', loader);
+};
+
+export const clearLoader = () => {
+  const loader = document.querySelector(`.${DOM_ELEMENT_STRINGS.loader}`);
+
+  if (loader)
+      loader.parentElement.removeChild(loader);
 };
 
 /*export const NEW_ELEMENTS = {

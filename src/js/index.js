@@ -62,7 +62,7 @@
  */
 import Search from './models/Search'
 import * as searchView from './views/searchView'
-import {DOM_ELEMENTS as Elements} from './views/base'
+import {DOM_ELEMENTS as Elements, clearLoader, renderLoader} from './views/base'
 
 /**
  * Global state of the app
@@ -84,11 +84,13 @@ const controlSearch = async () => {
         // 3 - Prepare the UI for the new data
         searchView.cleanInput();
         searchView.cleanResultList();
+        renderLoader(Elements.results);
 
         // 4 - Search for recipes
         await state.search.getSearchResults();
 
         // 5 - Render results in UI
+        clearLoader();
         searchView.renderResults(state.search.result);
     }
 };
@@ -96,4 +98,13 @@ const controlSearch = async () => {
 Elements.search.addEventListener('submit', e => {
     e.preventDefault();
     controlSearch();
+});
+
+Elements.results_pages.addEventListener('click', event => {
+    // closest ancestor of the current element (or the current element itself) which matches the selectors given in parameter.
+    // If there isn't such an ancestor, it returns null
+    const buttonElement = event.target.closest('.btn-inline');
+    searchView.cleanResultList();
+    //searchView.renderResults(state.search.result, parseInt(buttonElement.getAttribute('data-goto')));
+    searchView.renderResults(state.search.result, parseInt(buttonElement.dataset.goto));
 });

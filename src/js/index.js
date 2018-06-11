@@ -60,8 +60,10 @@
  *  current data and current variables, we want it in one place and one object
  *  Libraries like Redux on react do this
  */
+import Recipe from './models/Recipe'
 import Search from './models/Search'
 import * as searchView from './views/searchView'
+import * as recipeView from './views/recipeView'
 import {DOM_ELEMENTS as Elements, clearLoader, renderLoader} from './views/base'
 
 /**
@@ -86,12 +88,47 @@ const controlSearch = async () => {
         searchView.cleanResultList();
         renderLoader(Elements.results);
 
-        // 4 - Search for recipes
-        await state.search.getSearchResults();
+        try {
+            // 4 - Search for recipes
+            await state.search.getSearchResults();
 
-        // 5 - Render results in UI
-        clearLoader();
-        searchView.renderResults(state.search.result);
+            // 5 - Render results in UI
+            clearLoader();
+            searchView.renderResults(state.search.result);
+        } catch (e) {
+            alert(e);
+            clearLoader();
+        }
+    }
+};
+
+const controlRecipe = async () => {
+    // Gets ID and deletes #
+    const id = window.location.hash.replace('#', '');
+    console.log(id);
+
+    if (id){
+        // Prepare UI for changes
+
+        // Create new recipe object
+        state.recipe = new Recipe(id);
+
+        // TESTING
+        window.r = state.recipe;
+
+        try {
+            // Get recipe data
+            await state.recipe.getFullRecipe();
+
+            // Calculate servings and times
+            state.recipe.calcCookingTime();
+            state.recipe.calcServings();
+
+            // Render recipe
+            console.log(state.recipe);
+        } catch (e) {
+            alert(e);
+        }
     }
 };
 
@@ -99,6 +136,19 @@ Elements.search.addEventListener('submit', e => {
     e.preventDefault();
     controlSearch();
 });
+
+/*window.addEventListener('hashchange', controlRecipe);
+window.addEventListener('load', controlRecipe);*/
+
+['hashchange', 'load'].forEach(event => window.addEventListener(event, controlRecipe));
+
+/*Elements.results_list.addEventListener('click', async (e) => {
+    console.log(e.target.closest('.results__link').href.split('#')[1]);
+    state.recipe = new Recipe(e.target.closest('.results__link').href.split('#')[1]);
+    await state.recipe.getFullRecipe();
+
+    recipeView.renderRecipe(state.recipe.result);
+});*/
 
 Elements.results_pages.addEventListener('click', event => {
     // closest ancestor of the current element (or the current element itself) which matches the selectors given in parameter.

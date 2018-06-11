@@ -1,4 +1,5 @@
 export const DOM_ELEMENTS = {
+    recipe: document.querySelector('.recipe'),
     results: document.querySelector('.results'),
     results_list: document.querySelector('.results__list'),
     results_pages: document.querySelector('.results__pages'),

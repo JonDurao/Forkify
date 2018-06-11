@@ -7,6 +7,7 @@ export const cleanInput = () => {
 };
 
 export const cleanResultList = () => {
+    elements.recipe.innerHTML = '';
     elements.results_pages.innerHTML = '';
     elements.results_list.innerHTML = '';
 };

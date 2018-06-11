@@ -70,7 +70,7 @@ export default class Recipe {
                 objIng = {
                     count,
                     unit: arrIng[unitIndex],
-                    ingredient: arrIng.slice(unitIndex).join(' ')
+                    ingredient: arrIng.slice(unitIndex + 1).join(' ')
                 }
             } else if (parseInt(arrIng[0], 10)) {
                 // No unit but 1st element is a number
@@ -92,9 +92,5 @@ export default class Recipe {
         });
 
         this.ingredients = newIngredients;
-    };
-
-    parseIngredientsJon () {
-
     };
 }

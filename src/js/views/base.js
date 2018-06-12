@@ -4,7 +4,8 @@ export const DOM_ELEMENTS = {
     results_list: document.querySelector('.results__list'),
     results_pages: document.querySelector('.results__pages'),
     search: document.querySelector('.search'),
-    search_input: document.querySelector('.search__field')
+    search_input: document.querySelector('.search__field'),
+    shopping_list: document.querySelector('.shopping__list')
 };
 
 export const DOM_ELEMENT_STRINGS = {

@@ -64,9 +64,11 @@
  *  Libraries like Redux on react do this
  */
 import Recipe from './models/Recipe'
+import ShoppingList from './models/ShoppingList'
 import Search from './models/Search'
 import * as searchView from './views/searchView'
 import * as recipeView from './views/recipeView'
+import * as shoppingListView from './views/shoppinglistview'
 import {DOM_ELEMENTS as Elements, clearLoader, renderLoader} from './views/base'
 
 /**
@@ -142,6 +144,15 @@ const controlRecipe = async () => {
     }
 };
 
+const controlShoppinList = () => {
+    if (!state.shoppingList) state.shoppingList = new ShoppingList();
+
+    state.recipe.ingredients.forEach(value => {
+        const item = state.shoppingList.addItem(value.count, value.unit, value.ingredient);
+        shoppingListView.renderShoppingListElement(item);
+    });
+};
+
 Elements.search.addEventListener('submit', e => {
     e.preventDefault();
     controlSearch();
@@ -160,6 +171,22 @@ window.addEventListener('load', controlRecipe);*/
     recipeView.renderRecipe(state.recipe.result);
 });*/
 
+Elements.shopping_list.addEventListener('click', event => {
+    const id = event.target.closest('.shopping__item').dataset.itemid;
+    console.log(id);
+
+    if (event.target.matches('.shopping__delete *')) {
+        state.shoppingList.deleteItem(id);
+        shoppingListView.deleteListItem(id);
+    }
+});
+
+Elements.shopping_list.addEventListener('change', event => {
+    if (event.target.matches('.shopping__count *')) {
+        console.log(event.target);
+    }
+});
+
 Elements.results_pages.addEventListener('click', event => {
     // closest ancestor of the current element (or the current element itself) which matches the selectors given in parameter.
     // If there isn't such an ancestor, it returns null
@@ -175,6 +202,8 @@ Elements.recipe.addEventListener('click', event => {
             state.recipe.updateServigs('dec');
    } else if (event.target.matches('.btn-increase-serving *')) {
        state.recipe.updateServigs('inc');
+   } else if (event.target.matches('.recipe__ingredients .recipe__btn *')) {
+       controlShoppinList();
    }
 
    recipeView.updateServigsIngridients(state.recipe);

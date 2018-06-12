@@ -56,6 +56,9 @@
  *      Better error control
  */
 /**
+ *  Fractional
+ */
+/**
  *  State of the APP
  *  current data and current variables, we want it in one place and one object
  *  Libraries like Redux on react do this
@@ -109,6 +112,14 @@ const controlRecipe = async () => {
 
     if (id){
         // Prepare UI for changes
+        recipeView.clearRecipe();
+        renderLoader(Elements.recipe);
+
+        // Highlight selected result
+        if (state.search){
+            searchView.cleanHighlighted();
+            searchView.highlightSelected(id);
+        }
 
         // Create new recipe object
         state.recipe = new Recipe(id);
@@ -123,7 +134,8 @@ const controlRecipe = async () => {
             state.recipe.calcServings();
 
             // Render recipe
-            console.log(state.recipe);
+            clearLoader();
+            recipeView.renderRecipe(state.recipe);
         } catch (e) {
             alert(e);
         }
@@ -155,4 +167,15 @@ Elements.results_pages.addEventListener('click', event => {
     searchView.cleanResultList();
     //searchView.renderResults(state.search.result, parseInt(buttonElement.getAttribute('data-goto')));
     searchView.renderResults(state.search.result, parseInt(buttonElement.dataset.goto));
+});
+
+Elements.recipe.addEventListener('click', event => {
+   if (event.target.matches('.btn-decrease-serving *')) {
+       if (state.recipe.servings > 1)
+            state.recipe.updateServigs('dec');
+   } else if (event.target.matches('.btn-increase-serving *')) {
+       state.recipe.updateServigs('inc');
+   }
+
+   recipeView.updateServigsIngridients(state.recipe);
 });

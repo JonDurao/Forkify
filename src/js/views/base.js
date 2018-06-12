@@ -9,6 +9,7 @@ export const DOM_ELEMENTS = {
 
 export const DOM_ELEMENT_STRINGS = {
     loader: 'loader',
+    highlightedResult: 'results__link--active',
     nextPage: 'results__btn--next',
     prevPage: 'results__btn--prev'
 };

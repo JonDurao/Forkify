@@ -17,10 +17,8 @@ export default class Recipe {
             this.ingredients = res.data.recipe.ingredients;
             this.publisher = res.data.recipe.publisher;
             this.source_url = res.data.recipe.source_url;
-
-            console.log(this.ingredients);
         } catch (e) {
-            console.log(e);
+            alert(e);
         }
     }
 
@@ -36,15 +34,17 @@ export default class Recipe {
     };
 
     parseIngredients() {
-        const unitLong = ['tablespoons', 'tablespoon', 'ounces', 'ounce', 'teaspoons', 'teaspoon', 'cups', 'pounds', 'Gr'];
-        const unitShort = ['tbsp', 'tbsp', 'oz', 'oz', 'tsp', 'tsp', 'cup', 'pound', 'g'];
+        const unitLong = ['tablespoons', 'tablespoon', 'ounces', 'ounce', 'teaspoons', 'teaspoon', 'cups', 'pounds'];
+        const unitShort = ['tbsp', 'tbsp', 'oz', 'oz', 'tsp', 'tsp', 'cup', 'pound'];
+
+        const units = [...unitShort, 'kg', 'g'];
 
         const newIngredients = this.ingredients.map(el => {
             // Uniform unit
             let ingredient = el.toLowerCase();
 
             unitLong.forEach((unit, index) => {
-                ingredient = ingredient.replace(unit, unitShort[index]);
+                ingredient = ingredient.replace(unit, units[index]);
             });
 
             // Remove parenthesis
@@ -52,7 +52,10 @@ export default class Recipe {
 
             // Parse into count, unit, ingredient
             const arrIng = ingredient.split(' ');
-            const unitIndex = arrIng.findIndex(valueShort => unitShort.includes(valueShort));
+            // Returns returns the index of the first element in the array that satisfies the provided testing function.
+            // Otherwise -1 is returned.
+            // Includes determines whether an array includes a certain element
+            const unitIndex = arrIng.findIndex(valueShort => units.includes(valueShort));
 
             let objIng;
 
@@ -61,10 +64,16 @@ export default class Recipe {
                 const arrCount = arrIng.slice(0, unitIndex);
                 let count;
 
-                if (arrCount.length === 1){
-                    count = eval(arrIng[0].replace('-','+'));
-                } else {
-                    count = eval(arrIng.slice(0, unitIndex). join('+'));
+                try {
+                    if (arrCount.length === 1){
+                        // eval() evaluates JavaScript code represented as a string
+                        count = eval(arrIng[0].replace('-','+'));
+                    } else {
+                        count = eval(arrIng.slice(0, unitIndex). join('+'));
+                    }
+                } catch (e) {
+                    let re1 = new RegExp("([^\\d]+\)");
+                    count = arrIng[0].replace(re1, '');
                 }
 
                 objIng = {
@@ -92,5 +101,15 @@ export default class Recipe {
         });
 
         this.ingredients = newIngredients;
+    };
+
+    updateServigs(type) {
+        const newServings = type === 'inc' ? (this.servings + 1) : (this.servings - 1);
+
+        this.ingredients.forEach(ing => {
+            ing.count *= (newServings / this.servings);
+        });
+
+        this.servings = newServings;
     };
 }

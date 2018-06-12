@@ -25,6 +25,18 @@ const createButtonPage = (page, type) => {
     elements.results_pages.insertAdjacentHTML('beforeend', pageButton);
 };
 
+export const cleanHighlighted = () => {
+    try {
+        document.querySelector(`.${elementsStrings.highlightedResult}`).classList.remove(elementsStrings.highlightedResult);
+    } catch (e) {
+        console.log('No element selected ATM')
+    }
+};
+
+export const highlightSelected = id => {
+    document.querySelector(`a[href='#${id}']`).classList.add(elementsStrings.highlightedResult);
+};
+
 export const  limitTitleCharacters = (title, limit = 17) => {
     const newTitle = [];
 

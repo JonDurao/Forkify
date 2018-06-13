@@ -87,14 +87,21 @@ import {DOM_ELEMENTS as Elements, clearLoader, renderLoader} from './views/base'
 const state = {};
 window.addEventListener('load', () => {
     if (!state.favourite) state.favourite = new Favourite();
+    if (!state.shoppingList) state.shoppingList = new ShoppingList();
 
     state.favourite.recoverData();
+    state.shoppingList.recoverData();
 
     if (state.favourite.favourites.length > 0) {
         state.favourite.favourites.forEach(value => favouriteView.renderFavourite(value));
     }
 
+    if (state.shoppingList.items.length > 0) {
+        state.shoppingList.items.forEach(value => shoppingListView.renderShoppingListElement(value));
+    }
+
     favouriteView.toggleLikeMenu(state.favourite.getNumberFavs());
+    shoppingListView.toggleDeleteAllBtn(state.shoppingList.items.length);
 });
 
 const controlSearch = async () => {
@@ -168,6 +175,7 @@ const controlShoppingList = () => {
 
     state.recipe.ingredients.forEach(value => {
         const item = state.shoppingList.addItem(value.count, value.unit, value.ingredient);
+        console.log(item);
         shoppingListView.renderShoppingListElement(item);
     });
 

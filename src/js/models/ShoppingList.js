@@ -17,6 +17,10 @@ export default class ShoppingList {
         return item;
     }
 
+    deleteAll () {
+        this.items = [];
+    }
+
     deleteItem (id) {
         const index = this.items.findIndex(value => value.id===id);
 

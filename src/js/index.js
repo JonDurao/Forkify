@@ -59,16 +59,22 @@
  *  Fractional
  */
 /**
+ *  Local Storage API
+ *  It only saves string (JSON STRINGIFY)
+ */
+/**
  *  State of the APP
  *  current data and current variables, we want it in one place and one object
  *  Libraries like Redux on react do this
  */
+import Favourite from './models/Favourite'
 import Recipe from './models/Recipe'
-import ShoppingList from './models/ShoppingList'
 import Search from './models/Search'
-import * as searchView from './views/searchView'
+import ShoppingList from './models/ShoppingList'
+import * as favouriteView from './views/favouriteView'
 import * as recipeView from './views/recipeView'
-import * as shoppingListView from './views/shoppinglistview'
+import * as searchView from './views/searchView'
+import * as shoppingListView from './views/shoppingListView'
 import {DOM_ELEMENTS as Elements, clearLoader, renderLoader} from './views/base'
 
 /**
@@ -79,6 +85,17 @@ import {DOM_ELEMENTS as Elements, clearLoader, renderLoader} from './views/base'
  *  - Liked recipes
  */
 const state = {};
+window.addEventListener('load', () => {
+    if (!state.favourite) state.favourite = new Favourite();
+
+    state.favourite.recoverData();
+
+    if (state.favourite.favourites.length > 0) {
+        state.favourite.favourites.forEach(value => favouriteView.renderFavourite(value));
+    }
+
+    favouriteView.toggleLikeMenu(state.favourite.getNumberFavs());
+});
 
 const controlSearch = async () => {
       // 1 - Get Query from view
@@ -138,19 +155,45 @@ const controlRecipe = async () => {
             // Render recipe
             clearLoader();
             recipeView.renderRecipe(state.recipe);
+
+            favouriteView.toggleLikeBtn(state.favourite.containsFav(id)!==-1);
         } catch (e) {
             alert(e);
         }
     }
 };
 
-const controlShoppinList = () => {
+const controlShoppingList = () => {
     if (!state.shoppingList) state.shoppingList = new ShoppingList();
 
     state.recipe.ingredients.forEach(value => {
         const item = state.shoppingList.addItem(value.count, value.unit, value.ingredient);
         shoppingListView.renderShoppingListElement(item);
     });
+
+    shoppingListView.toggleDeleteAllBtn(state.shoppingList.items.length);
+};
+
+const controlFavourite = () => {
+    if (!state.favourite) state.favourite = new Favourite();
+
+    if (state.recipe) {
+        const currentId = state.recipe.recipeId;
+
+        console.log(state.favourite.containsFav(currentId));
+
+        if (state.favourite.containsFav(currentId) === -1) {
+            const favItem = state.favourite.addFav(state.recipe);
+            favouriteView.renderFavourite(favItem);
+        } else {
+            state.favourite.deleteFav(currentId);
+            favouriteView.deleteFavourite(currentId);
+        }
+
+        favouriteView.toggleLikeBtn(state.favourite.containsFav(currentId)!==-1);
+    }
+
+    favouriteView.toggleLikeMenu(state.favourite.getNumberFavs());
 };
 
 Elements.search.addEventListener('submit', e => {
@@ -173,17 +216,26 @@ window.addEventListener('load', controlRecipe);*/
 
 Elements.shopping_list.addEventListener('click', event => {
     const id = event.target.closest('.shopping__item').dataset.itemid;
-    console.log(id);
 
     if (event.target.matches('.shopping__delete *')) {
         state.shoppingList.deleteItem(id);
         shoppingListView.deleteListItem(id);
     }
+
+    shoppingListView.toggleDeleteAllBtn(state.shoppingList.items.length);
 });
 
 Elements.shopping_list.addEventListener('change', event => {
     if (event.target.matches('.shopping__count *')) {
-        console.log(event.target);
+        state.shoppingList.updateItem(event.target.closest('li').dataset.itemid, parseFloat(event.target.value));
+    }
+});
+
+Elements.shopping_delete_all.addEventListener('click', event => {
+    if (event.target.matches('.shopping_delete_all_button *')) {
+        state.shoppingList.deleteAll();
+        shoppingListView.deleteAll();
+        shoppingListView.toggleDeleteAllBtn(state.shoppingList.items.length);
     }
 });
 
@@ -198,13 +250,16 @@ Elements.results_pages.addEventListener('click', event => {
 
 Elements.recipe.addEventListener('click', event => {
    if (event.target.matches('.btn-decrease-serving *')) {
-       if (state.recipe.servings > 1)
-            state.recipe.updateServigs('dec');
+       if (state.recipe.servings > 1) {
+           state.recipe.updateServigs('dec');
+           recipeView.updateServigsIngridients(state.recipe);
+       }
    } else if (event.target.matches('.btn-increase-serving *')) {
        state.recipe.updateServigs('inc');
-   } else if (event.target.matches('.recipe__ingredients .recipe__btn *')) {
-       controlShoppinList();
+       recipeView.updateServigsIngridients(state.recipe);
+   } else if (event.target.matches('.recipe__ingredients, .recipe__btn, .recipe__btn *')) {
+       controlShoppingList();
+   }  else if (event.target.matches('recipe__love, .recipe__love *')) {
+        controlFavourite();
    }
-
-   recipeView.updateServigsIngridients(state.recipe);
 });

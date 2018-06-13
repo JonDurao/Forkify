@@ -1,11 +1,14 @@
 export const DOM_ELEMENTS = {
+    favourite: document.querySelector('.likes'),
+    favourite_list: document.querySelector('.likes__list'),
     recipe: document.querySelector('.recipe'),
     results: document.querySelector('.results'),
     results_list: document.querySelector('.results__list'),
     results_pages: document.querySelector('.results__pages'),
     search: document.querySelector('.search'),
     search_input: document.querySelector('.search__field'),
-    shopping_list: document.querySelector('.shopping__list')
+    shopping_list: document.querySelector('.shopping__list'),
+    shopping_delete_all: document.querySelector('.shopping_delete_all')
 };
 
 export const DOM_ELEMENT_STRINGS = {

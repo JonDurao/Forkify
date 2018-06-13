@@ -490,3 +490,11 @@ body {
   .shopping__item:hover .shopping__delete {
     opacity: 1;
     visibility: visible; }
+  .shopping_delete_all {
+    display: flex;
+    justify-content: center;
+    padding: 4em;
+  }
+  .shopping_delete_all_button {
+      background-image: linear-gradient(to bottom right, #ef9a9a, #f44336);
+  }

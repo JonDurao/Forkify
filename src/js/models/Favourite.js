@@ -1,4 +1,5 @@
 import UniqueId from 'uniqid'
+import {removeFavouriteData as removeFB, writeFavouriteData as writeFB} from './../firebaseConnection'
 
 export default class Favourite {
     constructor (){
@@ -14,6 +15,7 @@ export default class Favourite {
         };
 
         this.favourites.push(fav);
+        writeFB(parseInt(item.recipeId), item.title, item.publisher, item.image_url);
 
         // Saving the favs in local Storage
         this.persistData();
@@ -31,6 +33,7 @@ export default class Favourite {
 
         // Deleting the favs in local Storage
         this.persistData();
+        removeFB(id);
     }
 
     getNumberFavs () {

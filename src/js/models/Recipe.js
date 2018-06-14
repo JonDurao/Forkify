@@ -1,5 +1,6 @@
 import axios from 'axios'
 import {API_VALUES as api} from './../config'
+import {writeRecipeData as writeFB} from './../firebaseConnection'
 
 export default class Recipe {
     constructor (recipeId) {
@@ -17,6 +18,8 @@ export default class Recipe {
             this.ingredients = res.data.recipe.ingredients;
             this.publisher = res.data.recipe.publisher;
             this.source_url = res.data.recipe.source_url;
+
+            writeFB(this.recipeId, this.title, this.image_url, this.ingredients, this.publisher, this.source_url);
         } catch (e) {
             alert(e);
         }

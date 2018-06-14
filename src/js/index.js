@@ -85,6 +85,8 @@ import {DOM_ELEMENTS as Elements, clearLoader, renderLoader} from './views/base'
  *  - Liked recipes
  */
 const state = {};
+window.stat = state;
+
 window.addEventListener('load', () => {
     if (!state.favourite) state.favourite = new Favourite();
     if (!state.shoppingList) state.shoppingList = new ShoppingList();

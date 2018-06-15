@@ -1,4 +1,3 @@
-import UniqueId from 'uniqid'
 import {removeFavouriteData as removeFB, writeFavouriteData as writeFB} from './../firebaseConnection'
 
 export default class Favourite {

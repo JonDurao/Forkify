@@ -1,6 +1,6 @@
 import axios from 'axios'
 import {API_VALUES as api} from './../config'
-import {writeRecipeData as writeFB} from './../firebaseConnection'
+import {getRecipeData as getFB, writeRecipeData as writeFB} from './../firebaseConnection'
 
 export default class Recipe {
     constructor (recipeId) {
@@ -9,19 +9,28 @@ export default class Recipe {
 
     async getFullRecipe() {
         const recipeApiCall = `get?key=${api.API_KEY}&rId=${this.recipeId}`;
+        const cachedRecipe = await getFB(this.recipeId);
 
-        try{
-            const res = await axios(`${api.LOCAL_CORS_PROXY}${api.API_BASE}${recipeApiCall}`);
+        if (cachedRecipe !== null) {
+            this.title = cachedRecipe.title;
+            this.image_url = cachedRecipe.image_url;
+            this.ingredients = cachedRecipe.ingredients;
+            this.publisher = cachedRecipe.publisher;
+            this.source_url = cachedRecipe.source_url;
+        } else {
+            try{
+                const res = await axios(`${api.LOCAL_CORS_PROXY}${api.API_BASE}${recipeApiCall}`);
 
-            this.title = res.data.recipe.title;
-            this.image_url = res.data.recipe.image_url;
-            this.ingredients = res.data.recipe.ingredients;
-            this.publisher = res.data.recipe.publisher;
-            this.source_url = res.data.recipe.source_url;
+                this.title = res.data.recipe.title;
+                this.image_url = res.data.recipe.image_url;
+                this.ingredients = res.data.recipe.ingredients;
+                this.publisher = res.data.recipe.publisher;
+                this.source_url = res.data.recipe.source_url;
 
-            writeFB(this.recipeId, this.title, this.image_url, this.ingredients, this.publisher, this.source_url);
-        } catch (e) {
-            alert(e);
+                writeFB(this.recipeId, this.title, this.image_url, this.ingredients, this.publisher, this.source_url);
+            } catch (e) {
+                alert(e);
+            }
         }
     }
 

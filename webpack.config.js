@@ -15,7 +15,7 @@ module.exports = {
     output: {
         // where to place output
         // current directory -> dist
-         path: path.resolve(__dirname, 'dist'),
+         path: path.resolve(__dirname, 'public'),
         // name of webpack
         filename: "js/bundle.js"
     },

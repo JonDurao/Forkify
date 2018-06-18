@@ -1,6 +1,12 @@
 export const DOM_ELEMENTS = {
     favourite: document.querySelector('.likes'),
     favourite_list: document.querySelector('.likes__list'),
+    login_login_list: document.querySelector('.users_panel_login'),
+    login_logout_list: document.querySelector('.users__panel__logout'),
+    login_panel: document.querySelector('.users__panel'),
+    login_panel_list: document.querySelectorAll('.users__search'),
+    login_user_input: document.querySelector('#user_username_input'),
+    login_pass_input: document.querySelector('#user_password_input'),
     recipe: document.querySelector('.recipe'),
     results: document.querySelector('.results'),
     results_list: document.querySelector('.results__list'),

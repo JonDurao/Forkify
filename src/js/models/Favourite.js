@@ -1,11 +1,11 @@
-import {removeFavouriteData as removeFB, writeFavouriteData as writeFB} from './../firebaseConnection'
+import {getFavouriteData as getFB, removeFavouriteData as removeFB, writeFavouriteData as writeFB} from './../firebaseConnection'
 
 export default class Favourite {
     constructor (){
         this.favourites = [];
     };
 
-    addFav (item) {
+    addFav (item, username = null)  {
         const fav = {
             id: parseInt(item.recipeId),
             title: item.title,
@@ -14,10 +14,13 @@ export default class Favourite {
         };
 
         this.favourites.push(fav);
-        writeFB(parseInt(item.recipeId), item.title, item.publisher, item.image_url);
+        //writeFB(parseInt(item.recipeId), item.title, item.publisher, item.image_url);
 
-        // Saving the favs in local Storage
-        this.persistData();
+        //Saving the favs in local Storage
+        //this.persistData();
+
+        if (username)
+            writeFB(this.favourites, username);
 
         return fav;
     }
@@ -26,27 +29,34 @@ export default class Favourite {
         return this.favourites.findIndex(elem => elem.id === parseInt(id));
     }
 
-    deleteFav (id) {
+    deleteFav (id, username = null) {
         const index = this.favourites.findIndex(value => value.id === id);
         this.favourites.splice(index, 1);
 
         // Deleting the favs in local Storage
-        this.persistData();
-        removeFB(id);
+        if (username !== null)
+            removeFB(id, username);
     }
 
     getNumberFavs () {
         return this.favourites.length;
     }
 
-    persistData() {
-        localStorage.setItem('fav', JSON.stringify(this.favourites));
-    }
+    /*persistData(username = null) {
+        //localStorage.setItem('fav', JSON.stringify(this.favourites));
+        if (username !== null)
 
-    recoverData() {
-        const storage = localStorage.getItem('fav');
+    }*/
 
-        if (storage)
-            this.favourites = JSON.parse(storage);
+    async recoverData(username = null) {
+        //const storage = localStorage.getItem('fav');
+
+        if (username != null){
+            const result = await getFB(username);
+            this.favourites = result.map(value => value.value);
+        }
+
+        /*if (storage)
+            this.favourites = JSON.parse(storage);*/
     }
 }

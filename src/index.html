@@ -16,7 +16,10 @@
 <body>
     <div class="container">
         <header class="header">
-            <img src="img/logo.png" alt="Logo" class="header__logo">
+            <div>
+                <img src="img/logo.png" alt="Logo" class="header__logo">
+            </div>
+
             <form class="search">
                 <input type="text" class="search__field" placeholder="Search over 1,000,000 recipes...">
                 <button class="btn search__btn">
@@ -26,15 +29,44 @@
                     <span>Search</span>
                 </button>
             </form>
-            <div class="likes" style="visibility: hidden;">
-                <div class="likes__field">
-                    <svg class="likes__icon">
-                        <use href="img/icons.svg#icon-heart"></use>
-                    </svg>
+            <div class="header__grid">
+                <div class="likes" style="visibility: hidden;">
+                    <div class="likes__field">
+                        <svg class="likes__icon">
+                            <use href="img/icons.svg#icon-heart"></use>
+                        </svg>
+                    </div>
+                    <div class="likes__panel">
+                        <ul class="likes__list">
+                        </ul>
+                    </div>
                 </div>
-                <div class="likes__panel">
-                    <ul class="likes__list">
-                    </ul>
+
+                <div class="users">
+                    <div class="users__field">
+                        <svg class="users__icon">
+                            <use href="img/icons.svg#icon-users"></use>
+                        </svg>
+                    </div>
+
+                    <div class="users__panel">
+                        <ul class="users_panel_login">
+                            <li class="users__search">
+                                <input id="user_username_input" type="text" class="users__search__field" placeholder="User">
+                            </li>
+                            <li class="users__search">
+                                <input id="user_password_input" type="text" class="users__search__field" placeholder="Password">
+                            </li>
+                            <li class="users__login">
+                                <button class="btn-small users_login_button">
+                                    <span style="margin: 0 auto">Log In</span>
+                                </button>
+                            </li>
+                        </ul>
+
+                        <ul class="users__panel__logout" style="display: none;">
+                        </ul>
+                    </div>
                 </div>
             </div>
         </header>

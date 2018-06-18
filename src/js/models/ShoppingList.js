@@ -1,12 +1,12 @@
 import UniqueId from 'uniqid'
-import {removeShoppingListData as removeFB, removeAllShoppingListData as removeAllFB, writeShoppingListData as writeFB} from './../firebaseConnection'
+import {getShoppingListData as getFB, removeShoppingListData as removeFB, removeAllShoppingListData as removeAllFB, updateShoppingListElement as updateFB, writeShoppingListData as writeFB} from './../firebaseConnection'
 
 export default class ShoppingList {
     constructor(){
         this.items = [];
     }
 
-    addItem (count, unit, ingredient) {
+    addItem (count, unit, ingredient, username) {
         const item = {
             id: UniqueId(),
             count,
@@ -15,19 +15,22 @@ export default class ShoppingList {
         };
 
         this.items.push(item);
+
+        if (username)
+            this.persistData(username);
         //this.persistData();
-        writeFB(item.id, item.count, item.unit, item.ingredient);
 
         return item;
     }
 
-    deleteAll () {
+    deleteAll (username) {
         this.items = [];
         //this.persistData();
-        removeAllFB();
+        if (username)
+            removeAllFB(username);
     }
 
-    deleteItem (id) {
+    deleteItem (id, username = null) {
         const index = this.items.findIndex(value => value.id===id);
 
         // SPLICE
@@ -35,21 +38,34 @@ export default class ShoppingList {
         // The function returns the items we asked for and deletes them from the original array
         this.items.splice(index, 1);
         //this.persistData();
-        removeFB(id);
+        if (username)
+            removeFB(id, username);
+    }
+
+    persistData (username = null) {
+        if (username)
+            writeFB(this.items, username);
     }
 
     /*persistData () {
         localStorage.setItem('shoppingList', JSON.stringify(this.items));
     }*/
 
-    recoverData () {
-        const data = JSON.parse(localStorage.getItem('shoppingList'));
+    async recoverData (username = null) {
+        //const data = JSON.parse(localStorage.getItem('shoppingList'));
+        if (username != null){
+            const result = await getFB(username);
+            this.items = result.map(value => value.value);
+        }
 
-        if (data)
-            this.items = data;
+        /*if (data)
+            this.items = data;*/
     }
 
-    updateItem (id, newCount) {
+    updateItem (id, newCount, username = null) {
         this.items.find(value => value.id===id).count = newCount;
+
+        if (username)
+            updateFB(username, this.items.find(value => value.id===id));
     }
 }

@@ -165,6 +165,10 @@ body {
     margin-left: 4rem;
     height: 4.5rem;
     display: block; }
+  .header__grid {
+    display: inline-flex;
+    padding: 0 2rem;
+  }
 
 .search {
   background-color: #fff;
@@ -194,7 +198,7 @@ body {
   padding: 0 !important; }
   .likes__field {
     cursor: pointer;
-    padding: 0 4rem;
+    padding: 0 2rem;
     display: flex;
     align-items: center;
     height: 100%;
@@ -212,7 +216,7 @@ body {
   .likes__panel {
     position: absolute;
     right: 0;
-    top: 10rem;
+    top: 6.8rem;
     z-index: 10;
     padding: 2rem 0;
     width: 34rem;
@@ -272,7 +276,8 @@ body {
       object-fit: cover;
       transition: all .3s; }
   .results__name,
-  .likes__name {
+  .likes__name,
+  .users__name{
     font-size: 1.3rem;
     color: #F59A83;
     text-transform: uppercase;
@@ -497,4 +502,78 @@ body {
   }
   .shopping_delete_all_button {
       background-image: linear-gradient(to bottom right, #ef9a9a, #f44336);
+  }
+  .users_login_button {
+    background-image: linear-gradient(to bottom right, #C8E6C9, #4CAF50);
+    float: right;
+    margin: 1rem 0 0 0;
+    width: 90%;
+  }
+  .users_login_button_logout {
+    background-image: linear-gradient(to bottom right, #ef9a9a, #f44336);
+  }
+
+.users {
+  position: relative;
+  align-self: stretch;
+  padding: 0 !important; }
+.users__field {
+  cursor: pointer;
+  padding: 0 2rem;
+  display: flex;
+  align-items: center;
+  height: 100%;
+  transition: all .3s; }
+.users__field:hover {
+  background-color: #F2EFEE; }
+.users__panel:hover,
+.users__field:hover + .users__panel {
+  visibility: visible;
+  opacity: 1; }
+.users__icon {
+  fill: #F59A83;
+  height: 3.75rem;
+  width: 3.75rem; }
+.users__panel {
+  position: absolute;
+  right: 0;
+  top: 6.8rem;
+  z-index: 10;
+  padding: 2rem 0;
+  width: 34rem;
+  background-color: #fff;
+  box-shadow: 0 0.8rem 5rem 2rem rgba(101, 90, 86, 0.1);
+  visibility: hidden;
+  opacity: 0;
+  transition: all .5s .2s; }
+  .users__panel__logged {
+    background-color: #F59A83;
+    color: #FFFFFF;
+  }
+  .users__login {
+    display: flex;
+    align-items: baseline;
+    justify-content: center;
+  }
+  .users__search {
+    background-color: #F9F5F3;
+    border-radius: 10rem;
+    display: block;
+    margin: 1rem auto;
+    padding: 1rem 0 1rem 3rem;
+    transition: all .3s;
+    width: 90%;
+  }
+  .users__search__field {
+    border: none;
+    background: none;
+    font-family: inherit;
+    color: inherit;
+    font-size: 1.7rem; }
+  .users__search__field:focus {
+    outline: none; }
+  .users__search__field::placeholder {
+    color: #DAD0CC; }
+  .users__panel__logout__username {
+
   }

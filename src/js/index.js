@@ -68,10 +68,12 @@
  *  Libraries like Redux on react do this
  */
 import Favourite from './models/Favourite'
+import Login from './models/Login'
 import Recipe from './models/Recipe'
 import Search from './models/Search'
 import ShoppingList from './models/ShoppingList'
 import * as favouriteView from './views/favouriteView'
+import * as loginView from './views/loginView'
 import * as recipeView from './views/recipeView'
 import * as searchView from './views/searchView'
 import * as shoppingListView from './views/shoppingListView'
@@ -88,23 +90,13 @@ const state = {};
 window.stat = state;
 
 window.addEventListener('load', () => {
-    if (!state.favourite) state.favourite = new Favourite();
-    if (!state.shoppingList) state.shoppingList = new ShoppingList();
-
-    state.favourite.recoverData();
-    state.shoppingList.recoverData();
-
-    if (state.favourite.favourites.length > 0) {
-        state.favourite.favourites.forEach(value => favouriteView.renderFavourite(value));
-    }
-
-    if (state.shoppingList.items.length > 0) {
-        state.shoppingList.items.forEach(value => shoppingListView.renderShoppingListElement(value));
-    }
-
-    favouriteView.toggleLikeMenu(state.favourite.getNumberFavs());
-    shoppingListView.toggleDeleteAllBtn(state.shoppingList.items.length);
+    state.login = new Login(null, null);
 });
+
+const initVars = () => {
+    state.favourite = new Favourite();
+    state.shoppingList = new ShoppingList();
+};
 
 const controlSearch = async () => {
       // 1 - Get Query from view
@@ -136,7 +128,6 @@ const controlSearch = async () => {
 const controlRecipe = async () => {
     // Gets ID and deletes #
     const id = window.location.hash.replace('#', '');
-    console.log(id);
 
     if (id){
         // Prepare UI for changes
@@ -165,7 +156,8 @@ const controlRecipe = async () => {
             clearLoader();
             recipeView.renderRecipe(state.recipe);
 
-            favouriteView.toggleLikeBtn(state.favourite.containsFav(id)!==-1);
+            if (state.favourite)
+                favouriteView.toggleLikeBtn(state.favourite.containsFav(id)!==-1);
         } catch (e) {
             alert(e);
         }
@@ -181,6 +173,9 @@ const controlShoppingList = () => {
         shoppingListView.renderShoppingListElement(item);
     });
 
+    if (state.login.username !== '')
+        state.shoppingList.persistData(state.login.username);
+
     shoppingListView.toggleDeleteAllBtn(state.shoppingList.items.length);
 };
 
@@ -190,13 +185,11 @@ const controlFavourite = () => {
     if (state.recipe) {
         const currentId = state.recipe.recipeId;
 
-        console.log(state.favourite.containsFav(currentId));
-
         if (state.favourite.containsFav(currentId) === -1) {
-            const favItem = state.favourite.addFav(state.recipe);
+            const favItem = state.favourite.addFav(state.recipe, state.login.username);
             favouriteView.renderFavourite(favItem);
         } else {
-            state.favourite.deleteFav(currentId);
+            state.favourite.deleteFav(currentId, state.login.username);
             favouriteView.deleteFavourite(currentId);
         }
 
@@ -204,6 +197,47 @@ const controlFavourite = () => {
     }
 
     favouriteView.toggleLikeMenu(state.favourite.getNumberFavs());
+};
+
+const controlLogin = async () => {
+    const passWord = loginView.getInputPassword();
+    const userName = loginView.getInputUser();
+
+    if (passWord && userName){
+        state.login = new Login(loginView.getInputUser(), loginView.getInputPassword());
+        state.login.getLoginResult().then(value => {
+            if (value){
+                loginView.renderLogout(state.login.username);
+            } else {
+                state.login = new Login(null, null);
+                loginView.renderLoginError();
+            }
+        });
+
+        state.favourite = new Favourite();
+        state.shoppingList = new ShoppingList();
+
+
+
+        await state.favourite.recoverData(state.login.username);
+        await state.shoppingList.recoverData(state.login.username);
+
+        console.log(state.shoppingList.items);
+
+        if (state.favourite.favourites)
+            state.favourite.favourites.forEach(value => favouriteView.renderFavourite(value));
+
+        if (state.shoppingList.items)
+            state.shoppingList.items.forEach(value => shoppingListView.renderShoppingListElement(value));
+
+        favouriteView.toggleLikeMenu(state.favourite.getNumberFavs());
+
+        if (state.recipe)
+            favouriteView.toggleLikeBtn(state.favourite.containsFav(state.recipe.recipeId)!==-1);
+
+        console.log(state.shoppingList.items);
+        shoppingListView.toggleDeleteAllBtn(state.shoppingList.items.length > 0);
+    }
 };
 
 Elements.search.addEventListener('submit', e => {
@@ -228,7 +262,7 @@ Elements.shopping_list.addEventListener('click', event => {
     const id = event.target.closest('.shopping__item').dataset.itemid;
 
     if (event.target.matches('.shopping__delete *')) {
-        state.shoppingList.deleteItem(id);
+        state.shoppingList.deleteItem(id, state.login.username);
         shoppingListView.deleteListItem(id);
     }
 
@@ -237,13 +271,13 @@ Elements.shopping_list.addEventListener('click', event => {
 
 Elements.shopping_list.addEventListener('change', event => {
     if (event.target.matches('.shopping__count *')) {
-        state.shoppingList.updateItem(event.target.closest('li').dataset.itemid, parseFloat(event.target.value));
+        state.shoppingList.updateItem(event.target.closest('li').dataset.itemid, parseFloat(event.target.value), state.login.username);
     }
 });
 
 Elements.shopping_delete_all.addEventListener('click', event => {
     if (event.target.matches('.shopping_delete_all_button *')) {
-        state.shoppingList.deleteAll();
+        state.shoppingList.deleteAll(state.login.username);
         shoppingListView.deleteAll();
         shoppingListView.toggleDeleteAllBtn(state.shoppingList.items.length);
     }
@@ -272,4 +306,15 @@ Elements.recipe.addEventListener('click', event => {
    }  else if (event.target.matches('recipe__love, .recipe__love *')) {
         controlFavourite();
    }
+});
+
+Elements.login_panel.addEventListener('click', event => {
+   if (event.target.matches('.users_panel_login button')){
+        controlLogin().then(console.log('Logged succesfully'));
+   }
+
+    if (event.target.matches('.users__panel__logout button')){
+        loginView.renderLogin();
+        initVars();
+    }
 });

@@ -7,9 +7,14 @@ export default class Recipe {
         this.recipeId = recipeId;
     }
 
+    //get?key=b5bdff6d8f6285a292be3e686d9e70c5&rId=8
+    //get?key=b5bdff6d8f6285a292be3e686d9e70c5&rId=38302c
+
     async getFullRecipe() {
         const recipeApiCall = `get?key=${api.API_KEY}&rId=${this.recipeId}`;
         const cachedRecipe = await getFB(this.recipeId);
+        console.log(this.recipeId);
+        console.log(cachedRecipe);
 
         if (cachedRecipe !== null) {
             this.title = cachedRecipe.title;
@@ -20,6 +25,8 @@ export default class Recipe {
         } else {
             try{
                 const res = await axios(`${api.LOCAL_CORS_PROXY}${api.API_BASE}${recipeApiCall}`);
+
+                console.log(res.data);
 
                 this.title = res.data.recipe.title;
                 this.image_url = res.data.recipe.image_url;

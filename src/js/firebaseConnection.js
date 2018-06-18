@@ -7,12 +7,12 @@ const firebaseDatabases = {
 
 // Initialize Firebase
 var config = {
-    apiKey: "-------------------------",
-    authDomain: "-----------------------",
-    databaseURL: "-----------------------",
-    projectId: "-----------------------",
-    storageBucket: "-----------------------",
-    messagingSenderId: "-----------------------"
+    apiKey: "AIzaSyArffdt9aNwp-5vpfbP_CRTfII-nxfLdJ8",
+    authDomain: "forkifyjsproject.firebaseapp.com",
+    databaseURL: "https://forkifyjsproject.firebaseio.com",
+    projectId: "forkifyjsproject",
+    storageBucket: "forkifyjsproject.appspot.com",
+    messagingSenderId: "677517171280"
 };
 
 firebase.initializeApp(config);
@@ -85,17 +85,19 @@ export const writeUserData = (username, password) => {
 
 const getFB = async (db, db2, id) => {
     let value;
+    console.log(id);
 
     if (db2 !== null){
-         value = await databaseFirebase.collection(db.toString()).doc(id.toString()).collection(db2.toString()).doc(db2.toString()).get();
+        value = await databaseFirebase.collection(db.toString()).doc(id.toString()).collection(db2.toString()).doc(db2.toString()).get();
     } else {
         value = await databaseFirebase.collection(db.toString()).doc(id.toString()).get();
     }
 
-    if (value.exists)
+    if (value.exists){
         return value.data().obj;
-    else
+    } else {
         return null;
+    }
 };
 
 const getAllFB = async (db, db2, id) => {

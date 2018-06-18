@@ -90,12 +90,51 @@ const state = {};
 window.stat = state;
 
 window.addEventListener('load', () => {
-    state.login = new Login(null, null);
+    const oldUser = localStorage.getItem('user');
+
+    console.log(oldUser);
+
+    if (oldUser !== null) {
+        state.login = JSON.parse(oldUser);
+        loginView.renderLogout(state.login.username);
+        initOperations().then('Cache loaded').catch('Error loading cache');
+    } else {
+        state.login = new Login(null, null);
+    }
 });
 
 const initVars = () => {
     state.favourite = new Favourite();
     state.shoppingList = new ShoppingList();
+
+    favouriteView.clearFavourite();
+    shoppingListView.clearShoppingListElement();
+    localStorage.removeItem('user');
+};
+
+const initOperations = async () => {
+    state.favourite = new Favourite();
+    state.shoppingList = new ShoppingList();
+
+    await state.favourite.recoverData(state.login.username);
+    await state.shoppingList.recoverData(state.login.username);
+
+    favouriteView.clearFavourite();
+    shoppingListView.clearShoppingListElement();
+
+    if (state.favourite.favourites)
+        state.favourite.favourites.forEach(value => favouriteView.renderFavourite(value));
+
+    if (state.shoppingList.items)
+        state.shoppingList.items.forEach(value => shoppingListView.renderShoppingListElement(value));
+
+    favouriteView.toggleLikeMenu(state.favourite.getNumberFavs());
+
+    if (state.recipe)
+        favouriteView.toggleLikeBtn(state.favourite.containsFav(state.recipe.recipeId)!==-1);
+
+    console.log(state.shoppingList.items);
+    shoppingListView.toggleDeleteAllBtn(state.shoppingList.items.length > 0);
 };
 
 const controlSearch = async () => {
@@ -128,6 +167,7 @@ const controlSearch = async () => {
 const controlRecipe = async () => {
     // Gets ID and deletes #
     const id = window.location.hash.replace('#', '');
+    console.log(id);
 
     if (id){
         // Prepare UI for changes
@@ -145,6 +185,8 @@ const controlRecipe = async () => {
 
         try {
             // Get recipe data
+            console.log(state.recipe);
+
             await state.recipe.getFullRecipe();
             state.recipe.parseIngredients();
 
@@ -208,35 +250,12 @@ const controlLogin = async () => {
         state.login.getLoginResult().then(value => {
             if (value){
                 loginView.renderLogout(state.login.username);
+                initOperations().then('Cache loaded').catch('Error loading cache');
             } else {
                 state.login = new Login(null, null);
                 loginView.renderLoginError();
             }
         });
-
-        state.favourite = new Favourite();
-        state.shoppingList = new ShoppingList();
-
-
-
-        await state.favourite.recoverData(state.login.username);
-        await state.shoppingList.recoverData(state.login.username);
-
-        console.log(state.shoppingList.items);
-
-        if (state.favourite.favourites)
-            state.favourite.favourites.forEach(value => favouriteView.renderFavourite(value));
-
-        if (state.shoppingList.items)
-            state.shoppingList.items.forEach(value => shoppingListView.renderShoppingListElement(value));
-
-        favouriteView.toggleLikeMenu(state.favourite.getNumberFavs());
-
-        if (state.recipe)
-            favouriteView.toggleLikeBtn(state.favourite.containsFav(state.recipe.recipeId)!==-1);
-
-        console.log(state.shoppingList.items);
-        shoppingListView.toggleDeleteAllBtn(state.shoppingList.items.length > 0);
     }
 };
 
@@ -311,6 +330,7 @@ Elements.recipe.addEventListener('click', event => {
 Elements.login_panel.addEventListener('click', event => {
    if (event.target.matches('.users_panel_login button')){
         controlLogin().then(console.log('Logged succesfully'));
+        localStorage.setItem('user', JSON.stringify(state.login));
    }
 
     if (event.target.matches('.users__panel__logout button')){

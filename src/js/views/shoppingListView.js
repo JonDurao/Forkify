@@ -1,5 +1,9 @@
 import {DOM_ELEMENTS as elements} from './base';
 
+export const clearShoppingListElement = () => {
+    elements.shopping_list.innerHTML = '';
+};
+
 export const renderShoppingListElement = ingredient => {
     let step;
 

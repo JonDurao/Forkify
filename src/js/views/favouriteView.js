@@ -1,5 +1,9 @@
 import {DOM_ELEMENTS as elements} from './base';
 
+export const clearFavourite = () => {
+    elements.favourite_list.innerHTML = '';
+};
+
 export const renderFavourite = item => {
     const itemHtml = `
         <li>

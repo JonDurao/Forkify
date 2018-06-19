@@ -92,7 +92,7 @@ window.stat = state;
 window.addEventListener('load', () => {
     const oldUser = localStorage.getItem('user');
 
-    console.log(oldUser);
+    //console.log(oldUser);
 
     if (oldUser !== null) {
         state.login = JSON.parse(oldUser);
@@ -106,6 +106,13 @@ window.addEventListener('load', () => {
 const initVars = () => {
     state.favourite = new Favourite();
     state.shoppingList = new ShoppingList();
+
+    favouriteView.toggleLikeMenu(state.favourite.getNumberFavs());
+
+    if (state.recipe)
+        favouriteView.toggleLikeBtn(false);
+
+    shoppingListView.toggleDeleteAllBtn(state.shoppingList.items.length > 0);
 
     favouriteView.clearFavourite();
     shoppingListView.clearShoppingListElement();
@@ -133,7 +140,6 @@ const initOperations = async () => {
     if (state.recipe)
         favouriteView.toggleLikeBtn(state.favourite.containsFav(state.recipe.recipeId)!==-1);
 
-    console.log(state.shoppingList.items);
     shoppingListView.toggleDeleteAllBtn(state.shoppingList.items.length > 0);
 };
 
@@ -167,7 +173,7 @@ const controlSearch = async () => {
 const controlRecipe = async () => {
     // Gets ID and deletes #
     const id = window.location.hash.replace('#', '');
-    console.log(id);
+    //console.log(id);
 
     if (id){
         // Prepare UI for changes
@@ -185,7 +191,7 @@ const controlRecipe = async () => {
 
         try {
             // Get recipe data
-            console.log(state.recipe);
+            //console.log(state.recipe);
 
             await state.recipe.getFullRecipe();
             state.recipe.parseIngredients();
@@ -211,7 +217,7 @@ const controlShoppingList = () => {
 
     state.recipe.ingredients.forEach(value => {
         const item = state.shoppingList.addItem(value.count, value.unit, value.ingredient);
-        console.log(item);
+        //console.log(item);
         shoppingListView.renderShoppingListElement(item);
     });
 

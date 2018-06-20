@@ -5,9 +5,9 @@ export default class Favourite {
         this.favourites = [];
     };
 
-    addFav (item, username = null)  {
+    addFav (id, item, username = null)  {
         const fav = {
-            id: parseInt(item.recipeId),
+            id: id,
             title: item.title,
             publisher: item.publisher,
             image_url: item.image_url
@@ -26,7 +26,7 @@ export default class Favourite {
     }
 
     containsFav(id){
-        return this.favourites.findIndex(elem => elem.id === parseInt(id));
+        return this.favourites.findIndex(elem => elem.id === id);
     }
 
     deleteFav (id, username = null) {

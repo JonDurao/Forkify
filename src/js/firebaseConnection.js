@@ -56,12 +56,13 @@ export const updateShoppingListElement = (id, obj) => {
 };
 
 export const writeFavouriteData = (favourites, username) => {
-    console.log(favourites);
     writeFB(firebaseDatabases.USERS_DB, firebaseDatabases.FAVOURITES_DB, username, favourites);
 };
 
 export const writeRecipeData = (id, title, image_url, ingredients, publisher, source_url) => {
-    const receta = {title: title,
+    const receta = {
+        recipeId: id,
+        title: title,
         image_url: image_url,
         ingredients : ingredients,
         publisher : publisher,
@@ -85,7 +86,6 @@ export const writeUserData = (username, password) => {
 
 const getFB = async (db, db2, id) => {
     let value;
-    console.log(id);
 
     if (db2 !== null){
         value = await databaseFirebase.collection(db.toString()).doc(id.toString()).collection(db2.toString()).doc(db2.toString()).get();
@@ -157,11 +157,7 @@ const updateFB = (db, db2, id, value) => {
 };
 
 const writeFB = (db, db2, id, obj) => {
-    console.log(obj);
-
     if (db2 !== null) {
-        console.log(obj);
-
         obj.forEach(value => {
             databaseFirebase.collection(db.toString()).doc(id.toString()).collection(db2.toString()).doc(value.id.toString()).set({value})
                 .then(function() {

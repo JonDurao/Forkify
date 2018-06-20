@@ -234,7 +234,7 @@ const controlFavourite = () => {
         const currentId = state.recipe.recipeId;
 
         if (state.favourite.containsFav(currentId) === -1) {
-            const favItem = state.favourite.addFav(state.recipe, state.login.username);
+            const favItem = state.favourite.addFav(state.recipe.recipeId, state.recipe, state.login.username);
             favouriteView.renderFavourite(favItem);
         } else {
             state.favourite.deleteFav(currentId, state.login.username);

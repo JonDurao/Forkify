@@ -13,10 +13,9 @@ export default class Recipe {
     async getFullRecipe() {
         const recipeApiCall = `get?key=${api.API_KEY}&rId=${this.recipeId}`;
         const cachedRecipe = await getFB(this.recipeId);
-        console.log(this.recipeId);
-        console.log(cachedRecipe);
 
         if (cachedRecipe !== null) {
+            this.recipeId = cachedRecipe.recipeId;
             this.title = cachedRecipe.title;
             this.image_url = cachedRecipe.image_url;
             this.ingredients = cachedRecipe.ingredients;
@@ -25,8 +24,6 @@ export default class Recipe {
         } else {
             try{
                 const res = await axios(`${api.LOCAL_CORS_PROXY}${api.API_BASE}${recipeApiCall}`);
-
-                console.log(res.data);
 
                 this.title = res.data.recipe.title;
                 this.image_url = res.data.recipe.image_url;
